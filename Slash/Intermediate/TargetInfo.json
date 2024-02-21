@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "Slash",
+			"Path": "..\\Source\\Slash.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "SlashEditor",
+			"Path": "..\\Source\\SlashEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

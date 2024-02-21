@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\unreal projects\\slash\\source\\slash\\slash.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\unreal projects\\slash\\intermediate\\build\\win64\\x64\\slasheditor\\development\\engine\\sharedpch.engine.cpp20.inclorderunreal5_0.h.pch",
+        "Includes": [
+            "e:\\unreal projects\\slash\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\slash\\definitions.slash.h",
+            "e:\\unreal projects\\slash\\source\\slash\\slash.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

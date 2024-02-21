@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\Slash.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{F31BBDD1-B3E8-3BCC-9652-680E16935819}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\Slash.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\SlashEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\.ignore" />
+    <None Include="..\..\.vsconfig" />
+    <None Include="..\..\Slash.code-workspace" />
+    <Filter Include="Config">
+      <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\Slash">
+      <UniqueIdentifier>{94A1D0C1-5657-3A5A-9815-7671CFEA4C0F}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\Slash\DebugMacro.h">
+      <Filter>Source\Slash</Filter>
+    </ClInclude>
+    <None Include="..\..\Source\Slash\Slash.Build.cs">
+      <Filter>Source\Slash</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\Slash\Slash.cpp">
+      <Filter>Source\Slash</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Slash\Slash.h">
+      <Filter>Source\Slash</Filter>
+    </ClInclude>
+    <Filter Include="Source\Slash\Private">
+      <UniqueIdentifier>{C7B26820-BE6D-3F40-AEDA-61C93AD7A93B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Slash\Private\Characters">
+      <UniqueIdentifier>{9BA98CFA-6127-392C-8A0A-29B5D28CDB9A}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\Slash\Private\Characters\SlashCharacter.cpp">
+      <Filter>Source\Slash\Private\Characters</Filter>
+    </ClCompile>
+    <Filter Include="Source\Slash\Private\Items">
+      <UniqueIdentifier>{3DF3D363-0D69-3A5B-97AE-980F0AD3E09A}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\Slash\Private\Items\Item.cpp">
+      <Filter>Source\Slash\Private\Items</Filter>
+    </ClCompile>
+    <Filter Include="Source\Slash\Private\Pawns">
+      <UniqueIdentifier>{3C1E1C00-4399-39AF-98F7-5DD0D30C10A2}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\Slash\Private\Pawns\Bird.cpp">
+      <Filter>Source\Slash\Private\Pawns</Filter>
+    </ClCompile>
+    <Filter Include="Source\Slash\Public">
+      <UniqueIdentifier>{C8A49F26-1F9B-35D4-8F2E-DBB7BA8DBEC9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Slash\Public\Characters">
+      <UniqueIdentifier>{22E7A9D7-1F66-3724-A0AD-BE9FB4D684EE}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\Slash\Public\Characters\SlashCharacter.h">
+      <Filter>Source\Slash\Public\Characters</Filter>
+    </ClInclude>
+    <Filter Include="Source\Slash\Public\Items">
+      <UniqueIdentifier>{03EE9902-1225-3E3E-AF6E-23FDA4DA1733}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\Slash\Public\Items\Item.h">
+      <Filter>Source\Slash\Public\Items</Filter>
+    </ClInclude>
+    <Filter Include="Source\Slash\Public\Pawns">
+      <UniqueIdentifier>{61AEE7FD-EBB3-3A1B-8394-239C9B977B03}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\Slash\Public\Pawns\Bird.h">
+      <Filter>Source\Slash\Public\Pawns</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
