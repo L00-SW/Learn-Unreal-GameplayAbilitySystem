@@ -3,7 +3,7 @@
 #include "Items/Item.h"
 #include "Slash/DebugMacro.h"
 #include "Components/SphereComponent.h"
-
+#include "Characters/SlashCharacter.h"
 
 AItem::AItem()
 {
@@ -33,19 +33,19 @@ float AItem::TransformdSin()
 
 void AItem::SphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	const FString OtherActorName = OtherActor->GetName();
-	if (GEngine)
+	ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(OtherActor);
+	if (SlashCharacter)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 30.f, FColor::Blue, OtherActorName);
+		SlashCharacter->SetOverlappingItem(this);
 	}
 }
 
 void AItem::SphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	const FString OtherCompName = OtherComp->GetName();
-	if (GEngine)
+	ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(OtherActor);
+	if (SlashCharacter)
 	{
-		GEngine->AddOnScreenDebugMessage(2, 30.f, FColor::Blue, OtherCompName);
+		SlashCharacter->SetOverlappingItem(nullptr);
 	}
 }
 
@@ -57,5 +57,5 @@ void AItem::Tick(float DeltaTime)
 
 	RollSpeed = TransformdSin();
 
-	AddActorWorldRotation(FRotator(RollSpeed, 0.f, 0.f));
+	//AddActorWorldOffset(FVector(0.f, 0.f, RollSpeed));
 }
