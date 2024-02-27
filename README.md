@@ -1,8 +1,8 @@
 # Learn-Unreal
 
-¾ğ¸®¾ó °øºÎ
-3d ¾×¼Ç ¼Ò¿ï¶óÀÌÅ© °ÔÀÓ Á¦ÀÛÀ» À§ÇÑ °­ÀÇ °øºÎ
+ì–¸ë¦¬ì–¼
+3d ì•¡ì…˜ ì†Œìš¸ë¼ì´í¬ ê²Œì„ ì œì‘ì„ ìœ„í•œ ê°•ì˜ ê³µë¶€
 
 https://www.udemy.com/course/unreal-engine-5-the-ultimate-game-developer-course/?couponCode=24T4FS22124
 
-À¯µ¥¹Ì °­ÀÇ
+ìœ ë°ë¯¸ ê°•ì˜
