@@ -53,7 +53,7 @@ void ASlashCharacter::BeginPlay()
 		{
 			SubSystem->AddMappingContext(SlashMappingContext, 0);
 		}
-	}	
+	}
 }
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
@@ -89,6 +89,45 @@ void ASlashCharacter::EquipInput()
 	}
 }
 
+void ASlashCharacter::LMBAttack(const FInputActionValue& Value)
+{
+	if (CanAttack())
+	{
+		ActionState = EActionState::EAS_Attacking;
+		PlayAttackMontage();
+	}
+}
+
+void ASlashCharacter::PlayAttackMontage()
+{
+	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
+	if (Animinstance && AttackMontage)
+	{
+		Animinstance->Montage_Play(AttackMontage);
+		FName AttackName = FName();
+		if (ActionState == EActionState::EAS_Attacking)
+		{
+			AttackName = FName("Attack1");
+			//if (bCanCombo)
+			//{
+			//	AttackName = FName("Attack2");
+			//	bCanCombo = false;
+			//}
+		}
+	}
+}
+
+void ASlashCharacter::AttackEnd()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
+bool ASlashCharacter::CanAttack()
+{
+	return ActionState == EActionState::EAS_Unoccupied &&
+		CharacterState != ECharacterState::ECS_Unequipped;
+}
+
 void ASlashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -105,6 +144,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EquipInput);
+		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Triggered, this, &ASlashCharacter::LMBAttack);
 	}
 
 }
