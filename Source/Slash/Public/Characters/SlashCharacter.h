@@ -54,16 +54,23 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void EquipInput();
-	void LMBAttack(const FInputActionValue& Value);
+	//void LMBAttack(const FInputActionValue& Value);
 
 	//Play montage functions
-	void PlayAttackMontage();
+	//void PlayAttackMontage();
 
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
+
+	UFUNCTION(BlueprintCallable)
 	bool CanAttack();
 
-	//bool bCanCombo = false;
+	//Combo Attack Variable
+	UPROPERTY(BlueprintReadWrite)
+	bool bSaveAttack;
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 AttackIndex;
 
 private:
 	//CharacterType Controlls
