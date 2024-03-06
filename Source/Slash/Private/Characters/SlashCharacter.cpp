@@ -89,38 +89,59 @@ void ASlashCharacter::EquipInput()
 	}
 }
 
-//void ASlashCharacter::LMBAttack(const FInputActionValue& Value)
-//{
-//	if (CanAttack())
-//	{
-//		ActionState = EActionState::EAS_Attacking;
-//
-//		PlayAttackMontage();
-//	}
-//}
+void ASlashCharacter::LMBAttack()
+{
+	if (CanAttack())
+	{
+		ActionState = EActionState::EAS_Attacking;
 
-//void ASlashCharacter::PlayAttackMontage()
-//{
-//	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
-//	if (Animinstance && AttackMontage)
-//	{
-//		Animinstance->Montage_Play(AttackMontage);
-//		FName AttackName = FName();
-//		if (ActionState == EActionState::EAS_Attacking)
-//		{
-//			AttackName = FName("Attack1");
-//		}
-//	}
-//}
+		PlayAttackMontage();
+	}
+}
 
-void ASlashCharacter::AttackEnd()
+void ASlashCharacter::PlayAttackMontage()
+{
+	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
+	if (Animinstance && AttackMontage)
+	{
+		Animinstance->Montage_Play(AttackMontage);
+		FName AttackName = FName();
+		switch (AttackIndex) {
+		case 0:
+			++AttackIndex;
+			if (ActionState == EActionState::EAS_Attacking)
+			{
+				AttackName = FName("Attack1");
+			}
+			break;
+		case 1:
+			AttackIndex = 0;
+			if (ActionState == EActionState::EAS_Attacking)
+			{
+				AttackName = FName("Attack2");
+			}
+			break;
+		default:
+			break;
+		}
+		Animinstance->Montage_JumpToSection(AttackName, AttackMontage);
+	}
+}
+
+void ASlashCharacter::ResetAttack()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+void ASlashCharacter::ResetCombo()
+{
+	AttackIndex = 0;
+}
+
 bool ASlashCharacter::CanAttack()
 {
-	return CharacterState != ECharacterState::ECS_Unequipped;
+	return CharacterState != ECharacterState::ECS_Unequipped &&
+		ActionState != EActionState::EAS_Attacking;
 }
 
 void ASlashCharacter::Tick(float DeltaTime)
@@ -139,7 +160,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EquipInput);
-		//EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Triggered, this, &ASlashCharacter::LMBAttack);
+		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ASlashCharacter::LMBAttack);
 	}
 
 }
