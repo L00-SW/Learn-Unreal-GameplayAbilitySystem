@@ -55,7 +55,8 @@ void AItem::Tick(float DeltaTime)
 
 	RunningTime += DeltaTime;
 
-	RollSpeed = TransformdSin();
-
-	//AddActorWorldOffset(FVector(0.f, 0.f, RollSpeed));
+	if (ItemState == EItemState::EIS_Hovering) 
+	{
+		AddActorWorldOffset(FVector(0.f, 0.f, TransformdSin()));
+	}
 }

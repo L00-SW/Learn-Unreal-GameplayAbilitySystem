@@ -59,9 +59,9 @@ protected:
 	//Play montage functions
 	void PlayAttackMontage();
 
+	//Blueprint Notify Check Functions
 	UFUNCTION(BlueprintCallable)
 	void ResetAttack();
-
 	UFUNCTION(BlueprintCallable)
 	void ResetCombo();
 
@@ -70,6 +70,8 @@ protected:
 	//Combo Attack Variable
 	UPROPERTY(BlueprintReadOnly)
 	int32 AttackIndex = 0;
+
+	bool bResetCombo = true;
 
 private:
 	//CharacterType Controlls

@@ -58,6 +58,8 @@ void ASlashCharacter::BeginPlay()
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
+	if (ActionState == EActionState::EAS_Attacking || bResetCombo == false) return;
+
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	//find out which way is forward
@@ -124,6 +126,7 @@ void ASlashCharacter::PlayAttackMontage()
 		default:
 			break;
 		}
+		bResetCombo = false;
 		Animinstance->Montage_JumpToSection(AttackName, AttackMontage);
 	}
 }
@@ -136,6 +139,7 @@ void ASlashCharacter::ResetAttack()
 void ASlashCharacter::ResetCombo()
 {
 	AttackIndex = 0;
+	bResetCombo = true;
 }
 
 bool ASlashCharacter::CanAttack()
