@@ -14,6 +14,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UGroomComponent;
 class AItem;
+class AWeapon;
 
 
 
@@ -58,6 +59,7 @@ protected:
 
 	//Play montage functions
 	void PlayAttackMontage();
+	void PlayEquipMontage(FName SectionName);
 
 	//Blueprint Notify Check Functions
 	UFUNCTION(BlueprintCallable)
@@ -65,12 +67,25 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ResetCombo();
 
+	//Play montage check functions
 	bool CanAttack();
+	bool CanDisarm();
+	bool CanArm();
+
+	UFUNCTION(BlueprintCallable)
+	void Disarm();
+
+	UFUNCTION(BlueprintCallable)
+	void Equip_Shoulder();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishEquipping();
 
 	//Combo Attack Variable
 	UPROPERTY(BlueprintReadOnly)
 	int32 AttackIndex = 0;
 
+	UPROPERTY()
 	bool bResetCombo = true;
 
 private:
@@ -95,8 +110,15 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
 
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	AWeapon* EqippedWeapon;
+
+	//Animation Montage
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* AttackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* EquipShoulderMontage;
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
