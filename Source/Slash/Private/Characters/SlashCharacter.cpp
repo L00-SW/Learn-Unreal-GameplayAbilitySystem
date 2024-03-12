@@ -11,6 +11,7 @@
 #include "GroomComponent.h"
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
+#include "Components/BoxComponent.h"
 
 
 ASlashCharacter::ASlashCharacter()
@@ -229,5 +230,13 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 void ASlashCharacter::Jump()
 {
 	Super::Jump();
+}
+
+void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (EqippedWeapon && EqippedWeapon->GetWeaponBox())
+	{
+		EqippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+	}
 }
 

@@ -22,8 +22,8 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::SphereBeginOverlap);
-	Sphere->OnComponentEndOverlap.AddDynamic(this, &AItem::SphereEndOverlap);
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
+	Sphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 }
 
 float AItem::TransformdSin()
@@ -31,7 +31,7 @@ float AItem::TransformdSin()
 	return Amplitude * FMath::Sin(RunningTime * TimeConstant);
 }
 
-void AItem::SphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(OtherActor);
 	if (SlashCharacter)
@@ -40,7 +40,7 @@ void AItem::SphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	}
 }
 
-void AItem::SphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(OtherActor);
 	if (SlashCharacter)
