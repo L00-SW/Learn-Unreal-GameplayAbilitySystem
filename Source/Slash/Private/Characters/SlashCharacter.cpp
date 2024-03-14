@@ -143,7 +143,7 @@ void ASlashCharacter::PlayAttackMontage()
 	}
 }
 
-void ASlashCharacter::PlayEquipMontage(FName SectionName)
+void ASlashCharacter::PlayEquipMontage(const FName& SectionName)
 {
 	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
 	if (Animinstance && EquipShoulderMontage)
@@ -237,6 +237,7 @@ void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collisio
 	if (EqippedWeapon && EqippedWeapon->GetWeaponBox())
 	{
 		EqippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		EqippedWeapon->IgnoreActors.Empty();
 	}
 }
 

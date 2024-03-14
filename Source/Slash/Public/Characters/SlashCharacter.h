@@ -62,7 +62,7 @@ protected:
 
 	//Play montage functions
 	void PlayAttackMontage();
-	void PlayEquipMontage(FName SectionName);
+	void PlayEquipMontage(const FName& SectionName);
 
 	//Blueprint Notify Check Functions
 	UFUNCTION(BlueprintCallable)
