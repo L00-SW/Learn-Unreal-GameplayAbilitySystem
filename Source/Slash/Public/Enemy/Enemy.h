@@ -30,6 +30,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	//Play montage functions
+	void PlayDeathMontage();
 	void PlayHitReactMontage(const FName& SectionName);
 
 private:
@@ -43,11 +44,31 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* HitReactMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* DeathMontage;
+
+	//SFX
 	UPROPERTY(EditAnywhere, Category = "Sounds")
 	USoundBase* HitSound;
 
 	UPROPERTY(EditAnywhere, Category = "VisualEffect")
 	UParticleSystem* HitParticle;
+
+	UPROPERTY()
+	AActor* CombatTarget;
+
+	UPROPERTY(EditAnywhere)
+	double CombatRadius = 500.f;
+
+	//Navigation
+
+	//Current Patrol Target
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	AActor* PatrolTarget;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	TArray<AActor*> PatrolTargets;
+
 
 public:	
 
