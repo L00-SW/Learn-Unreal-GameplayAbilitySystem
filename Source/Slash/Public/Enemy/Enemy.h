@@ -10,6 +10,7 @@
 class UAnimMontage;
 class UAttributeComponent;
 class UHealthBarComponent;
+class AAIController;
 
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitInterface
@@ -19,6 +20,8 @@ class SLASH_API AEnemy : public ACharacter, public IHitInterface
 public:
 	AEnemy();
 	virtual void Tick(float DeltaTime) override;
+	void CheckPatrolTarget();
+	void CheckCombatTarget();
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
@@ -32,6 +35,11 @@ protected:
 	//Play montage functions
 	void PlayDeathMontage();
 	void PlayHitReactMontage(const FName& SectionName);
+
+	//nav
+	bool InTargetRange(AActor* Target, double Radius);
+	void MoveToTarget(AActor* Target);
+	AActor* SelectTarget();
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -61,6 +69,8 @@ private:
 	double CombatRadius = 500.f;
 
 	//Navigation
+	UPROPERTY()
+	AAIController* EnemyController;
 
 	//Current Patrol Target
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
@@ -68,6 +78,12 @@ private:
 
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 	TArray<AActor*> PatrolTargets;
+
+	UPROPERTY(EditAnywhere)
+	double PatrolRadius = 200.f;
+
+	FTimerHandle PatrolTimer;
+	void PatrolTimerFinished();
 
 
 public:	

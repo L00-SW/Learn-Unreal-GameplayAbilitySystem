@@ -11,6 +11,8 @@
 #include "Components/WidgetComponent.h"
 #include "HUD/HealthBarComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AIController.h"
 
 AEnemy::AEnemy()
 {
@@ -47,6 +49,9 @@ void AEnemy::BeginPlay()
 	{
 		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
 	}
+
+	EnemyController = Cast<AAIController>(GetController());
+	MoveToTarget(PatrolTarget);
 }
 
 void AEnemy::PlayDeathMontage()
@@ -97,20 +102,73 @@ void AEnemy::PlayHitReactMontage(const FName& SectionName)
 	}
 }
 
+bool AEnemy::InTargetRange(AActor* Target, double Radius)
+{
+	if (Target == nullptr) return false;
+	const double TargetDistance = (Target->GetActorLocation() - GetActorLocation()).Size();
+	DRAW_SPHERE(GetActorLocation(), FColor::Blue);
+	DRAW_SPHERE(Target->GetActorLocation(), FColor::Red);
+	return TargetDistance <= Radius;
+}
+
+void AEnemy::MoveToTarget(AActor* Target)
+{
+	if (EnemyController == nullptr || Target == nullptr) return;
+	FAIMoveRequest MoveRequest;
+	MoveRequest.SetGoalActor(Target);
+	MoveRequest.SetAcceptanceRadius(15.f);
+	EnemyController->MoveTo(MoveRequest);
+}
+
+AActor* AEnemy::SelectTarget()
+{
+	TArray<AActor*> ValidTargets;
+	for (AActor* Target : PatrolTargets)
+	{
+		if (Target != PatrolTarget)
+		{
+			ValidTargets.AddUnique(Target);
+		}
+	}
+	if (PatrolTargets.Num() > 0)
+	{
+		const int32 RandTarget = FMath::RandRange(0, ValidTargets.Num() - 1);
+		return ValidTargets[RandTarget];
+	}
+
+	return nullptr;
+}
+
+void AEnemy::PatrolTimerFinished()
+{
+	MoveToTarget(PatrolTarget);
+}
+
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CombatTarget)
+	CheckCombatTarget();
+	CheckPatrolTarget();
+}
+
+void AEnemy::CheckPatrolTarget()
+{
+	if (InTargetRange(PatrolTarget, PatrolRadius))
 	{
-		const double TargetDistance = (CombatTarget->GetActorLocation() - GetActorLocation()).Size();
-		if (TargetDistance > CombatRadius)
+		PatrolTarget = SelectTarget();
+		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, 5.f);
+	}
+}
+
+void AEnemy::CheckCombatTarget()
+{
+	if (!InTargetRange(CombatTarget, CombatRadius))
+	{
+		CombatTarget = nullptr;
+		if (HealthBarWidget)
 		{
-			CombatTarget = nullptr;
-			if (HealthBarWidget)
-			{
-				HealthBarWidget->SetVisibility(false);
-			}
+			HealthBarWidget->SetVisibility(false);
 		}
 	}
 }
