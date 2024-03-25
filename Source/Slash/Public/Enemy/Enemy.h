@@ -5,12 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/HitInterface.h"
+#include "Characters/CharacterTypes.h"
 #include "Enemy.generated.h"
 
 class UAnimMontage;
 class UAttributeComponent;
 class UHealthBarComponent;
 class AAIController;
+class UPawnSensingComponent;
 
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitInterface
@@ -41,12 +43,19 @@ protected:
 	void MoveToTarget(AActor* Target);
 	AActor* SelectTarget();
 
+	UFUNCTION()
+	void PawnSensed(APawn* SeenPawn);
+
 private:
+	//Components
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;
 
 	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarWidget;
+
+	UPROPERTY(VisibleAnywhere)
+	UPawnSensingComponent* PawnSensing;
 
 	//Animation Montage
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
@@ -66,7 +75,10 @@ private:
 	AActor* CombatTarget;
 
 	UPROPERTY(EditAnywhere)
-	double CombatRadius = 500.f;
+	double CombatRadius = 1000.f;
+
+	UPROPERTY(EditAnywhere)
+	double AttackRadius = 100.f;
 
 	//Navigation
 	UPROPERTY()
@@ -84,6 +96,11 @@ private:
 
 	FTimerHandle PatrolTimer;
 	void PatrolTimerFinished();
+
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+
+	float RunningSpeed = 300.f;
+	float WalkSpeed = 125.f;
 
 
 public:	
