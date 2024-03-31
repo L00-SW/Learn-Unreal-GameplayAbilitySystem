@@ -111,12 +111,11 @@ void ASlashCharacter::EquipInput()
 	}
 }
 
-void ASlashCharacter::LMBAttack()
+void ASlashCharacter::LightAttack()
 {
 	if (CanAttack())
 	{
 		ActionState = EActionState::EAS_Attacking;
-
 		PlayAttackMontage();
 	}
 }
@@ -224,7 +223,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &ASlashCharacter::EquipInput);
-		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ASlashCharacter::LMBAttack);
+		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ASlashCharacter::LightAttack);
 	}
 
 }
@@ -232,14 +231,5 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 void ASlashCharacter::Jump()
 {
 	Super::Jump();
-}
-
-void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
-{
-	if (EqippedWeapon && EqippedWeapon->GetWeaponBox())
-	{
-		EqippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		EqippedWeapon->IgnoreActors.Empty();
-	}
 }
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "BaseCharacter.h"
 #include "InputActionValue.h"
 #include "CharacterTypes.h"
 #include "SlashCharacter.generated.h"
@@ -14,12 +14,12 @@ class USpringArmComponent;
 class UCameraComponent;
 class UGroomComponent;
 class AItem;
-class AWeapon;
+class UAnimMontage;
 
 
 
 UCLASS(BlueprintType)
-class SLASH_API ASlashCharacter : public ACharacter
+class SLASH_API ASlashCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -29,9 +29,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void Jump() override;
-
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 
 protected:
 	virtual void BeginPlay() override;
@@ -58,20 +55,21 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void EquipInput();
-	void LMBAttack();
+	virtual void LightAttack() override;
 
-	//Play montage functions
-	void PlayAttackMontage();
+	/*
+	Play montage functions
+	*/
+	virtual void PlayAttackMontage() override;
 	void PlayEquipMontage(const FName& SectionName);
 
 	//Blueprint Notify Check Functions
-	UFUNCTION(BlueprintCallable)
-	void ResetAttack();
+	virtual void ResetAttack() override;
 	UFUNCTION(BlueprintCallable)
 	void ResetCombo();
 
 	//Play montage check functions
-	bool CanAttack();
+	virtual bool CanAttack() override;
 	bool CanDisarm();
 	bool CanArm();
 
@@ -113,13 +111,9 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	AWeapon* EqippedWeapon;
-
-	//Animation Montage
-	UPROPERTY(EditDefaultsOnly, Category = "Montages")
-	UAnimMontage* AttackMontage;
-
+	/*
+	Animation Montage
+	*/
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* EquipShoulderMontage;
 

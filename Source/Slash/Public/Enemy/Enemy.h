@@ -3,19 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "Interfaces/HitInterface.h"
+#include "Characters/BaseCharacter.h"
 #include "Characters/CharacterTypes.h"
+#include "GameFramework/Actor.h"
 #include "Enemy.generated.h"
 
-class UAnimMontage;
-class UAttributeComponent;
 class UHealthBarComponent;
 class AAIController;
 class UPawnSensingComponent;
+class AWeapon;
 
 UCLASS()
-class SLASH_API AEnemy : public ACharacter, public IHitInterface
+class SLASH_API AEnemy : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -27,16 +26,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
-	void DirectionalHitReact(const FVector& ImpactPoint);
-
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void Destroyed() override;
 
 protected:
 	virtual void BeginPlay() override;
 
 	//Play montage functions
-	void PlayDeathMontage();
-	void PlayHitReactMontage(const FName& SectionName);
+	virtual void PlayDeathMontage() override;
 
 	//nav
 	bool InTargetRange(AActor* Target, double Radius);
@@ -49,27 +46,13 @@ protected:
 private:
 	//Components
 	UPROPERTY(VisibleAnywhere)
-	UAttributeComponent* Attributes;
-
-	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarWidget;
 
 	UPROPERTY(VisibleAnywhere)
 	UPawnSensingComponent* PawnSensing;
 
-	//Animation Montage
-	UPROPERTY(EditDefaultsOnly, Category = "Montages")
-	UAnimMontage* HitReactMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Montages")
-	UAnimMontage* DeathMontage;
-
-	//SFX
-	UPROPERTY(EditAnywhere, Category = "Sounds")
-	USoundBase* HitSound;
-
-	UPROPERTY(EditAnywhere, Category = "VisualEffect")
-	UParticleSystem* HitParticle;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AWeapon> WeaponClass;
 
 	UPROPERTY()
 	AActor* CombatTarget;
@@ -101,8 +84,4 @@ private:
 
 	float RunningSpeed = 300.f;
 	float WalkSpeed = 125.f;
-
-
-public:	
-
 };
