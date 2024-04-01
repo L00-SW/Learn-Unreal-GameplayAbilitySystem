@@ -113,6 +113,7 @@ void ASlashCharacter::EquipInput()
 
 void ASlashCharacter::LightAttack()
 {
+	//Super::LightAttack();
 	if (CanAttack())
 	{
 		ActionState = EActionState::EAS_Attacking;
@@ -122,6 +123,7 @@ void ASlashCharacter::LightAttack()
 
 void ASlashCharacter::PlayAttackMontage()
 {
+	//Super::PlayAttackMontage();
 	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
 	if (Animinstance && AttackMontage)
 	{

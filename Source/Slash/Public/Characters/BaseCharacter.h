@@ -38,8 +38,12 @@ protected:
 	void PlayHitReactMontage(const FName& SectionName);
 	virtual void PlayDeathMontage();
 	void DirectionalHitReact(const FVector& ImpactPoint);
+	void PlayHitSound(const FVector &ImpactPoint);
+	void SpawnHitParticles(const FVector &ImpactPoint);
+	virtual void HandleDamage(float DamageAmount);
 
 	virtual bool CanAttack();
+	bool IsAlive();
 
 	//Blueprint Notify Check Functions
 	UFUNCTION(BlueprintCallable)
@@ -64,6 +68,8 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;
 
+
+private:
 	//SFX
 	UPROPERTY(EditAnywhere, Category = "Sounds")
 	USoundBase* HitSound;

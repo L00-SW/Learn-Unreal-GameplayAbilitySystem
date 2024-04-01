@@ -23,8 +23,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void CheckPatrolTarget();
 	void CheckCombatTarget();
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void Destroyed() override;
@@ -32,7 +30,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void LightAttack() override;
+
 	//Play montage functions
+	virtual void PlayAttackMontage() override;
 	virtual void PlayDeathMontage() override;
 
 	//nav
@@ -42,6 +43,12 @@ protected:
 
 	UFUNCTION()
 	void PawnSensed(APawn* SeenPawn);
+
+	UPROPERTY(BlueprintReadOnly)
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+
+	virtual bool CanAttack() override;
+	virtual void HandleDamage(float DamageAmount) override;
 
 private:
 	//Components
@@ -61,7 +68,7 @@ private:
 	double CombatRadius = 1000.f;
 
 	UPROPERTY(EditAnywhere)
-	double AttackRadius = 100.f;
+	double AttackRadius = 150.f;
 
 	//Navigation
 	UPROPERTY()
@@ -78,10 +85,35 @@ private:
 	double PatrolRadius = 200.f;
 
 	FTimerHandle PatrolTimer;
-	void PatrolTimerFinished();
+	void PatrolTimerFinished();	
 
-	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+	//Combat
+	void StartAttackTimer();
+	void ClearAttackTimer();
 
+	FTimerHandle AttackTimer;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float AttackMin = 0.5f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float AttackMax = 1.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	float RunningSpeed = 300.f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	float WalkSpeed = 125.f;
+
+	//HUD, AI Behavior
+	void HideHealthBar();
+	void ShowHealthBar();
+	void LoseInterest();
+	void StartPatrolling();
+	void ChaseTarget();
+	bool IsOutsideCombatRadius();
+	bool IsOutsideAttackRadius();
+	bool IsInsideAttackRadius();
+	bool IsDead();
+	bool IsChasing();
+	bool IsAttacking();
+	bool IsEngaged();
 };
