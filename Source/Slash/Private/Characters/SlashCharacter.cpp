@@ -117,32 +117,7 @@ void ASlashCharacter::LightAttack()
 	if (CanAttack())
 	{
 		ActionState = EActionState::EAS_Attacking;
-		PlayAttackMontage();
-	}
-}
-
-void ASlashCharacter::PlayAttackMontage()
-{
-	//Super::PlayAttackMontage();
-	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
-	if (Animinstance && AttackMontage)
-	{
-		Animinstance->Montage_Play(AttackMontage);
-		FName AttackName = FName();
-		switch (AttackIndex) {
-		case 0:
-			++AttackIndex;
-			AttackName = FName("Attack1");
-			break;
-		case 1:
-			AttackIndex = 0;
-			AttackName = FName("Attack2");
-			break;
-		default:
-			break;
-		}
-		bResetCombo = false;
-		Animinstance->Montage_JumpToSection(AttackName, AttackMontage);
+		PlayComboAttackMontage();
 	}
 }
 

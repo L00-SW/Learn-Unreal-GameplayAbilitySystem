@@ -60,7 +60,6 @@ protected:
 	/*
 	Play montage functions
 	*/
-	virtual void PlayAttackMontage() override;
 	void PlayEquipMontage(const FName& SectionName);
 
 	//Blueprint Notify Check Functions
@@ -83,11 +82,11 @@ protected:
 	void FinishEquipping();
 
 	//Combo Attack Variable
-	UPROPERTY(BlueprintReadOnly)
-	int32 AttackIndex = 0;
+	//UPROPERTY(BlueprintReadOnly)
+	//int32 AttackIndex = 0;
 
-	UPROPERTY()
-	bool bResetCombo = true;
+	//UPROPERTY()
+	//bool bResetCombo = true;
 
 private:
 	//CharacterType Controlls

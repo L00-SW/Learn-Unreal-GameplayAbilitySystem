@@ -142,76 +142,19 @@ bool AEnemy::IsEngaged()
 
 void AEnemy::LightAttack()
 {
+	EnemyState = EEnemyState::EES_Engaged;
 	//Super::LightAttack();
-	PlayAttackMontage();
-}
-
-void AEnemy::PlayAttackMontage()
-{
-	//Super::PlayAttackMontage();
-
-	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
-	if (Animinstance && AttackMontage)
-	{
-		Animinstance->Montage_Play(AttackMontage);
-		const int32 Selection = FMath::RandRange(0, 4);
-		FName AttackName = FName();
-		switch (Selection) {
-		case 0:
-			AttackName = FName("Attack1");
-			break;
-		case 1:
-			AttackName = FName("Attack2");
-			break;
-		case 2:
-			AttackName = FName("Attack3");
-			break;
-		case 3:
-			AttackName = FName("Attack4");
-			break;
-		case 4:
-			AttackName = FName("Attack5");
-			break;
-		default:
-			break;
-		}
-		Animinstance->Montage_JumpToSection(AttackName, AttackMontage);
-	}
+	PlayRandomAttackMontage();
 }
 
 void AEnemy::PlayDeathMontage()
 {
-	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
-	if (Animinstance && DeathMontage)
-	{
-		Animinstance->Montage_Play(DeathMontage);
-		const int32 Selection = FMath::RandRange(0, 4);
-		FName SectionName = FName();
-		switch(Selection)
-		{
-			case 0:
-				SectionName = FName("Death1");
-				break;
-			case 1:
-				SectionName = FName("Death2");
-				break;
-			case 2:
-				SectionName = FName("Death3");
-				break;
-			case 3:
-				SectionName = FName("Death4");
-				break;
-			case 4:
-				SectionName = FName("Death5");
-				break;
-			default:
-				break;
-		}
-		Animinstance->Montage_JumpToSection(SectionName, DeathMontage);
-	}
+	EnemyState = EEnemyState::EES_Dead;
+	PlayRandomDeathMontage();
+	ClearAttackTimer();
 	HideHealthBar();
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetLifeSpan(5.f);
+	DisableCapsule();
+	SetLifeSpan(DeathLifeSpan);
 }
 
 bool AEnemy::InTargetRange(AActor* Target, double Radius)
@@ -267,6 +210,7 @@ bool AEnemy::CanAttack()
 {
 	bool bCanAttack = IsInsideAttackRadius() &&
 		!IsAttacking() &&
+		!IsEngaged() &&
 		!IsDead();
 	return bCanAttack;
 }
@@ -278,6 +222,12 @@ void AEnemy::HandleDamage(float DamageAmount)
 	{
 		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
 	}
+}
+
+void AEnemy::ResetAttack()
+{
+	EnemyState = EEnemyState::EES_NoState;
+	CheckCombatTarget();
 }
 
 void AEnemy::PatrolTimerFinished()
@@ -348,6 +298,7 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 	}
 	else
 	{
+		if (EnemyState == EEnemyState::EES_Dead) return;
 		PlayDeathMontage();
 	}
 	PlayHitSound(ImpactPoint);

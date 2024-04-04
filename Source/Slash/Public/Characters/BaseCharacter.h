@@ -12,6 +12,7 @@ class UAttributeComponent;
 class UAnimMontage;
 
 
+
 UCLASS()
 class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
 {
@@ -34,13 +35,18 @@ protected:
 	/*
 	Play montage functions
 	*/
-	virtual void PlayAttackMontage();
 	void PlayHitReactMontage(const FName& SectionName);
 	virtual void PlayDeathMontage();
 	void DirectionalHitReact(const FVector& ImpactPoint);
 	void PlayHitSound(const FVector &ImpactPoint);
 	void SpawnHitParticles(const FVector &ImpactPoint);
 	virtual void HandleDamage(float DamageAmount);
+	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
+	void PlayComboAttackMontage();
+	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
+	void PlayRandomAttackMontage();
+	void PlayRandomDeathMontage();
+	void DisableCapsule();
 
 	virtual bool CanAttack();
 	bool IsAlive();
@@ -64,9 +70,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* DeathMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TArray<FName> AttackMontageSections;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TArray<FName> DeathMontageSections;
+
 	//Components
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;
+
+	//Combo Attack Variable
+	UPROPERTY(BlueprintReadOnly)
+	int32 AttackIndex = 0;
+
+	UPROPERTY()
+	bool bResetCombo = true;
 
 
 private:

@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
 
 
 // Sets default values
@@ -24,10 +25,6 @@ void ABaseCharacter::BeginPlay()
 }
 
 void ABaseCharacter::LightAttack()
-{
-}
-
-void ABaseCharacter::PlayAttackMontage()
 {
 }
 
@@ -100,6 +97,52 @@ void ABaseCharacter::HandleDamage(float DamageAmount)
 	{
 		Attributes->ReceiveDamage(DamageAmount);
 	}
+}
+
+void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
+{
+	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
+	if (Animinstance && Montage)
+	{
+		Animinstance->Montage_Play(Montage);
+		Animinstance->Montage_JumpToSection(SectionName, Montage);
+	}
+}
+
+void ABaseCharacter::PlayRandomAttackMontage()
+{
+	PlayRandomMontageSection(AttackMontage, AttackMontageSections);
+}
+
+void ABaseCharacter::PlayRandomDeathMontage()
+{
+	PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+}
+
+void ABaseCharacter::DisableCapsule()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ABaseCharacter::PlayComboAttackMontage()
+{
+	if (AttackMontageSections.Num() <= 0) return;
+	const int32 MaxSectionIndex = AttackMontageSections.Num() - 1;
+	bResetCombo = false;
+	PlayMontageSection(AttackMontage, AttackMontageSections[AttackIndex]);
+	++AttackIndex;
+	if (AttackIndex > MaxSectionIndex)
+	{
+		AttackIndex = 0;
+	}
+}
+
+void ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
+{
+	if (SectionNames.Num() <= 0) return;
+	const int32 MaxSectionIndex = SectionNames.Num() - 1;
+	const int32 Selection = FMath::RandRange(0, MaxSectionIndex);
+	PlayMontageSection(Montage, SectionNames[Selection]);
 }
 
 void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)

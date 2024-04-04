@@ -33,7 +33,6 @@ protected:
 	virtual void LightAttack() override;
 
 	//Play montage functions
-	virtual void PlayAttackMontage() override;
 	virtual void PlayDeathMontage() override;
 
 	//nav
@@ -49,6 +48,10 @@ protected:
 
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
+	virtual void ResetAttack() override;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float DeathLifeSpan = 5.f;
 
 private:
 	//Components
