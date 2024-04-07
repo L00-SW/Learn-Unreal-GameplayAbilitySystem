@@ -11,13 +11,12 @@
 #include "GroomComponent.h"
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
-#include "Components/BoxComponent.h"
 
 
 ASlashCharacter::ASlashCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -25,6 +24,12 @@ ASlashCharacter::ASlashCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
+
+	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	GetMesh()->SetGenerateOverlapEvents(true);
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArmComp->SetupAttachment(RootComponent);
@@ -44,11 +49,37 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows->AttachmentName = FString("head");
 }
 
+void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Move);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &ASlashCharacter::EquipInput);
+		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ASlashCharacter::LightAttack);
+	}
+
+}
+
+void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint)
+{
+	PlayHitSound(ImpactPoint);
+	SpawnHitParticles(ImpactPoint);
+}
+
+void ASlashCharacter::Jump()
+{
+	Super::Jump();
+}
+
 void ASlashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Tags.Add(FName("SlashCharacter"));
+	Tags.Add(FName("EngageableTarget"));
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
@@ -89,24 +120,17 @@ void ASlashCharacter::EquipInput()
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 	if (OverlappingWeapon)
 	{
-		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
-		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
-		OverlappingItem = nullptr;
-		EqippedWeapon = OverlappingWeapon;
+		EquipWeapon(OverlappingWeapon);
 	}
 	else
 	{
 		if (CanDisarm())
 		{
-			PlayEquipMontage(FName("Disarm_Shoulder"));
-			CharacterState = ECharacterState::ECS_Unequipped;
-			ActionState = EActionState::EAS_Equipping;
+			Disarm();
 		}
 		else if (CanArm())
 		{
-			PlayEquipMontage(FName("Equip_Shoulder"));
-			CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
-			ActionState = EActionState::EAS_Equipping;
+			Arm();
 		}
 	}
 }
@@ -121,25 +145,17 @@ void ASlashCharacter::LightAttack()
 	}
 }
 
-void ASlashCharacter::PlayEquipMontage(const FName& SectionName)
+void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
 {
-	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
-	if (Animinstance && EquipShoulderMontage)
-	{
-		Animinstance->Montage_Play(EquipShoulderMontage);
-		Animinstance->Montage_JumpToSection(SectionName, EquipShoulderMontage);
-	}
+	Weapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	OverlappingItem = nullptr;
+	EqippedWeapon = Weapon;
 }
 
 void ASlashCharacter::ResetAttack()
 {
 	ActionState = EActionState::EAS_Unoccupied;
-}
-
-void ASlashCharacter::ResetCombo()
-{
-	AttackIndex = 0;
-	bResetCombo = true;
 }
 
 bool ASlashCharacter::CanAttack()
@@ -165,13 +181,43 @@ bool ASlashCharacter::CanArm()
 
 void ASlashCharacter::Disarm()
 {
+	PlayEquipMontage(FName("Disarm_Shoulder"));
+	CharacterState = ECharacterState::ECS_Unequipped;
+	ActionState = EActionState::EAS_Equipping;
+}
+
+void ASlashCharacter::Arm()
+{
+	PlayEquipMontage(FName("Equip_Shoulder"));
+	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	ActionState = EActionState::EAS_Equipping;
+}
+
+void ASlashCharacter::PlayEquipMontage(const FName& SectionName)
+{
+	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
+	if (Animinstance && EquipShoulderMontage)
+	{
+		Animinstance->Montage_Play(EquipShoulderMontage);
+		Animinstance->Montage_JumpToSection(SectionName, EquipShoulderMontage);
+	}
+}
+
+void ASlashCharacter::ResetCombo()
+{
+	AttackIndex = 0;
+	bResetCombo = true;
+}
+
+void ASlashCharacter::AttachWeaponToBack()
+{
 	if (EqippedWeapon)
 	{
 		EqippedWeapon->AttachMeshToSocket(GetMesh(), FName("SpineSocket"));
 	}
 }
 
-void ASlashCharacter::Equip_Shoulder()
+void ASlashCharacter::AttachWeaponToHand()
 {
 	if (EqippedWeapon)
 	{
@@ -183,30 +229,3 @@ void ASlashCharacter::FinishEquipping()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
-
-void ASlashCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Move);
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
-		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &ASlashCharacter::EquipInput);
-		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ASlashCharacter::LightAttack);
-	}
-
-}
-
-void ASlashCharacter::Jump()
-{
-	Super::Jump();
-}
-

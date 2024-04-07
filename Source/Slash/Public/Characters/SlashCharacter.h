@@ -26,12 +26,40 @@ class SLASH_API ASlashCharacter : public ABaseCharacter
 public:
 	// Sets default values for this character's properties
 	ASlashCharacter();
-	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 	virtual void Jump() override;
 
 protected:
 	virtual void BeginPlay() override;
+
+	//CallBack for input
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void EquipInput();
+	virtual void LightAttack() override;
+
+	//Combat
+	void EquipWeapon(AWeapon* Weapon);
+	virtual void ResetAttack() override;
+	virtual bool CanAttack() override;
+	bool CanDisarm();
+	bool CanArm();
+	void Disarm();
+	void Arm();
+	void PlayEquipMontage(const FName& SectionName);
+
+	UFUNCTION(BlueprintCallable)
+	void ResetCombo();
+
+	UFUNCTION(BlueprintCallable)
+	void AttachWeaponToBack();
+
+	UFUNCTION(BlueprintCallable)
+	void AttachWeaponToHand();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishEquipping();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputMappingContext* SlashMappingContext;
@@ -51,43 +79,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* LMBAction;
 
-	//CallBack for input
-	void Move(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
-	void EquipInput();
-	virtual void LightAttack() override;
-
-	/*
-	Play montage functions
-	*/
-	void PlayEquipMontage(const FName& SectionName);
-
-	//Blueprint Notify Check Functions
-	virtual void ResetAttack() override;
-	UFUNCTION(BlueprintCallable)
-	void ResetCombo();
-
-	//Play montage check functions
-	virtual bool CanAttack() override;
-	bool CanDisarm();
-	bool CanArm();
-
-	UFUNCTION(BlueprintCallable)
-	void Disarm();
-
-	UFUNCTION(BlueprintCallable)
-	void Equip_Shoulder();
-
-	UFUNCTION(BlueprintCallable)
-	void FinishEquipping();
-
-	//Combo Attack Variable
-	//UPROPERTY(BlueprintReadOnly)
-	//int32 AttackIndex = 0;
-
-	//UPROPERTY()
-	//bool bResetCombo = true;
-
 private:
 	//CharacterType Controlls
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
@@ -95,6 +86,7 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
+	//Components
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* SpringArmComp;
 
