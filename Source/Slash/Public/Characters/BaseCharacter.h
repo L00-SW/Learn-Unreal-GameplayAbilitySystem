@@ -25,6 +25,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	virtual void LightAttack();
 	void DirectionalHitReact(const FVector& ImpactPoint);
 	virtual void HandleDamage(float DamageAmount);

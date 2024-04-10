@@ -64,10 +64,12 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 }
 
-void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint)
+void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
-	PlayHitSound(ImpactPoint);
-	SpawnHitParticles(ImpactPoint);
+	Super::GetHit_Implementation(ImpactPoint, Hitter);
+
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	ActionState = EActionState::EAS_HitReaction;
 }
 
 void ASlashCharacter::Jump()
@@ -160,8 +162,8 @@ void ASlashCharacter::ResetAttack()
 
 bool ASlashCharacter::CanAttack()
 {
-	return CharacterState != ECharacterState::ECS_Unequipped &&
-		ActionState != EActionState::EAS_Attacking;
+	return ActionState == EActionState::EAS_Unoccupied &&
+		CharacterState != ECharacterState::ECS_Unequipped;
 }
 
 bool ASlashCharacter::CanDisarm()
@@ -227,5 +229,11 @@ void ASlashCharacter::AttachWeaponToHand()
 
 void ASlashCharacter::FinishEquipping()
 {
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
+void ASlashCharacter::HitReactEnd()
+{
+	ResetCombo();
 	ActionState = EActionState::EAS_Unoccupied;
 }
