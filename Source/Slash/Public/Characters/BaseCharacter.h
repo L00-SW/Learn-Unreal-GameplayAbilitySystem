@@ -25,6 +25,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	//Combat
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	virtual void LightAttack();
 	void DirectionalHitReact(const FVector& ImpactPoint);
@@ -34,14 +35,20 @@ protected:
 	void DisableCapsule();
 	virtual bool CanAttack();
 	bool IsAlive();
-	/*
-	Play montage functions
-	*/
+
+	//Play montage functions
 	void PlayHitReactMontage(const FName& SectionName);
 	virtual void PlayDeathMontage();
 	void PlayComboAttackMontage();
 	void PlayRandomAttackMontage();
 	void PlayRandomDeathMontage();
+	void StopAttackMotage();
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetTranslationWarpTarget();
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetRotationWarpTarget();
 
 	//Blueprint Notify Check Functions
 	UFUNCTION(BlueprintCallable)
@@ -64,6 +71,12 @@ protected:
 
 	UPROPERTY()
 	bool bResetCombo = true;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	AActor* CombatTarget;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	double WarpTargetDistance = 75.f;
 
 
 private:
