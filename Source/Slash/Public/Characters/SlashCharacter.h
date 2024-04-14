@@ -15,7 +15,7 @@ class UCameraComponent;
 class UGroomComponent;
 class AItem;
 class UAnimMontage;
-
+class USlashOverlay;
 
 
 UCLASS(BlueprintType)
@@ -27,6 +27,7 @@ public:
 	// Sets default values for this character's properties
 	ASlashCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	virtual void Jump() override;
 
@@ -83,6 +84,8 @@ protected:
 	UInputAction* LMBAction;
 
 private:
+	void InitializeSlashOverlay();
+
 	//CharacterType Controlls
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 	
@@ -110,6 +113,9 @@ private:
 	*/
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* EquipShoulderMontage;
+
+	UPROPERTY()
+	USlashOverlay* SlashOverlay;
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }

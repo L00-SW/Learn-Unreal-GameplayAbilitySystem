@@ -9,8 +9,11 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GroomComponent.h"
+#include "Components/AttributeComponent.h"
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
+#include "HUD/SlashHUD.h"
+#include "HUD/SlashOverlay.h"
 
 
 ASlashCharacter::ASlashCharacter()
@@ -64,6 +67,12 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 }
 
+float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	HandleDamage(DamageAmount);
+	return DamageAmount;
+}
+
 void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
@@ -90,6 +99,7 @@ void ASlashCharacter::BeginPlay()
 			SubSystem->AddMappingContext(SlashMappingContext, 0);
 		}
 	}
+	InitializeSlashOverlay();
 }
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
@@ -236,4 +246,23 @@ void ASlashCharacter::HitReactEnd()
 {
 	ResetCombo();
 	ActionState = EActionState::EAS_Unoccupied;
+}
+
+void ASlashCharacter::InitializeSlashOverlay()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		ASlashHUD* SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD());
+		if (SlashHUD)
+		{
+			SlashOverlay = SlashHUD->GetSlashOverlay();
+			if (SlashOverlay && Attributes)
+			{
+				SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
+				SlashOverlay->SetStaminaBarPercent(1.f);
+				SlashOverlay->SetSouls(0);
+			}
+		}
+	}
 }
