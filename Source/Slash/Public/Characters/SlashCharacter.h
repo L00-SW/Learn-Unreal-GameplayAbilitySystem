@@ -49,6 +49,7 @@ protected:
 	void Disarm();
 	void Arm();
 	void PlayEquipMontage(const FName& SectionName);
+	virtual void PlayDeathMontage() override;
 
 	UFUNCTION(BlueprintCallable)
 	void ResetCombo();
@@ -84,7 +85,9 @@ protected:
 	UInputAction* LMBAction;
 
 private:
+	bool IsUnoccupied();
 	void InitializeSlashOverlay();
+	void SetHUDHealth();
 
 	//CharacterType Controlls
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;

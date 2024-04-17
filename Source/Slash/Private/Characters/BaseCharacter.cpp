@@ -41,10 +41,15 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* H
 
 void ABaseCharacter::LightAttack()
 {
+	if (CombatTarget && CombatTarget->ActorHasTag(FName("Dead")))
+	{
+		CombatTarget = nullptr;
+	}
 }
 
 void ABaseCharacter::PlayDeathMontage()
 {
+	Tags.Add(FName("Dead"));
 }
 
 void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
@@ -209,6 +214,11 @@ bool ABaseCharacter::CanAttack()
 bool ABaseCharacter::IsAlive()
 {
 	return Attributes && Attributes->IsAlive();
+}
+
+void ABaseCharacter::DisableMeshCollisioin()
+{
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABaseCharacter::ResetAttack()

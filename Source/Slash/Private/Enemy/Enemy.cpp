@@ -102,8 +102,10 @@ void AEnemy::BeginPlay()
 
 void AEnemy::LightAttack()
 {
+	Super::LightAttack();
+	if (CombatTarget == nullptr) return;
+
 	EnemyState = EEnemyState::EES_Engaged;
-	//Super::LightAttack();
 	PlayRandomAttackMontage();
 }
 
@@ -133,7 +135,12 @@ void AEnemy::ResetAttack()
 
 void AEnemy::PlayDeathMontage()
 {
+	Super::PlayDeathMontage();
 	EnemyState = EEnemyState::EES_Dead;
+	//Before DeathMotage end, get hit RandomDeathMontage start again
+	//Collision set NoCollision
+	DisableMeshCollisioin();
+
 	PlayRandomDeathMontage();
 	ClearAttackTimer();
 	HideHealthBar();

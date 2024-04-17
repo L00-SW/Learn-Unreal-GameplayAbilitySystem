@@ -70,6 +70,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	HandleDamage(DamageAmount);
+	SetHUDHealth();
 	return DamageAmount;
 }
 
@@ -77,13 +78,19 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
 
-	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
-	ActionState = EActionState::EAS_HitReaction;
+	DisableMeshCollisioin();
+	if (Attributes && Attributes->GetHealthPercent() > 0.f)
+	{
+		ActionState = EActionState::EAS_HitReaction;
+	}
 }
 
 void ASlashCharacter::Jump()
 {
-	Super::Jump();
+	if (IsUnoccupied())
+	{
+		Super::Jump();
+	}
 }
 
 void ASlashCharacter::BeginPlay()
@@ -215,6 +222,17 @@ void ASlashCharacter::PlayEquipMontage(const FName& SectionName)
 	}
 }
 
+void ASlashCharacter::PlayDeathMontage()
+{
+	Super::PlayDeathMontage();
+	ActionState = EActionState::EAS_Dead;
+	//Before DeathMotage end, get hit RandomDeathMontage start again
+	//Collision set NoCollision
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	PlayRandomDeathMontage();
+}
+
 void ASlashCharacter::ResetCombo()
 {
 	AttackIndex = 0;
@@ -248,6 +266,11 @@ void ASlashCharacter::HitReactEnd()
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+bool ASlashCharacter::IsUnoccupied()
+{
+	return ActionState == EActionState::EAS_Unoccupied;
+}
+
 void ASlashCharacter::InitializeSlashOverlay()
 {
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -264,5 +287,13 @@ void ASlashCharacter::InitializeSlashOverlay()
 				SlashOverlay->SetSouls(0);
 			}
 		}
+	}
+}
+
+void ASlashCharacter::SetHUDHealth()
+{
+	if (SlashOverlay && Attributes)
+	{
+		SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
 	}
 }
