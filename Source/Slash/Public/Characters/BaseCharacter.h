@@ -43,6 +43,7 @@ protected:
 	void PlayComboAttackMontage();
 	void PlayRandomAttackMontage();
 	void PlayRandomDeathMontage();
+	virtual void PlayDodgeMontage();
 	void StopAttackMotage();
 
 	UFUNCTION(BlueprintCallable)
@@ -102,6 +103,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	UAnimMontage* DeathMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	UAnimMontage* DodgeMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FName> AttackMontageSections;

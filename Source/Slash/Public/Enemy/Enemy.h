@@ -37,6 +37,8 @@ protected:
 	//Play montage functions
 	virtual void PlayDeathMontage() override;
 
+	void SpawnSoul();
+
 	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
@@ -113,4 +115,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float DeathLifeSpan = 5.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<class ASoul> SoulClass;
 };

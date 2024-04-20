@@ -139,6 +139,11 @@ void ABaseCharacter::PlayRandomDeathMontage()
 	PlayRandomMontageSection(DeathMontage, DeathMontageSections);
 }
 
+void ABaseCharacter::PlayDodgeMontage()
+{
+	PlayMontageSection(DodgeMontage, FName("Default"));
+}
+
 void ABaseCharacter::StopAttackMotage()
 {
 	UAnimInstance* Animinstance = GetMesh()->GetAnimInstance();
@@ -218,7 +223,7 @@ bool ABaseCharacter::IsAlive()
 
 void ABaseCharacter::DisableMeshCollisioin()
 {
-	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABaseCharacter::ResetAttack()

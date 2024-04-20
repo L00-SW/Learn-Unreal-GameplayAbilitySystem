@@ -20,8 +20,6 @@ void UAttributeComponent::BeginPlay()
 void UAttributeComponent::ReceiveDamage(float Damage)
 {
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
-	//death Implement
-	//if(Health == 0.f)
 }
 
 float UAttributeComponent::GetHealthPercent()
@@ -32,6 +30,11 @@ float UAttributeComponent::GetHealthPercent()
 bool UAttributeComponent::IsAlive()
 {
 	return Health > 0.f;
+}
+
+void UAttributeComponent::AddSouls(int32 PlusSouls)
+{
+	Souls += PlusSouls;
 }
 
 

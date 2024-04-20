@@ -14,6 +14,7 @@
 #include "Items/Weapons/Weapon.h"
 #include "HUD/SlashHUD.h"
 #include "HUD/SlashOverlay.h"
+#include "Items/Soul.h"
 
 
 ASlashCharacter::ASlashCharacter()
@@ -63,6 +64,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &ASlashCharacter::EquipInput);
 		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ASlashCharacter::LightAttack);
+		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Dodge);
 	}
 
 }
@@ -90,6 +92,20 @@ void ASlashCharacter::Jump()
 	if (IsUnoccupied())
 	{
 		Super::Jump();
+	}
+}
+
+void ASlashCharacter::SetOverlappingItem(AItem* Item)
+{
+	OverlappingItem = Item;
+}
+
+void ASlashCharacter::AddSouls(ASoul* Soul)
+{
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->AddSouls(Soul->GetSouls());
+		SlashOverlay->SetSouls(Attributes->GetSouls());
 	}
 }
 
@@ -156,11 +172,19 @@ void ASlashCharacter::EquipInput()
 
 void ASlashCharacter::LightAttack()
 {
-	//Super::LightAttack();
+	Super::LightAttack();
 	if (CanAttack())
 	{
 		ActionState = EActionState::EAS_Attacking;
 		PlayComboAttackMontage();
+	}
+}
+
+void ASlashCharacter::Dodge()
+{
+	if (IsUnoccupied())
+	{
+		PlayDodgeMontage();
 	}
 }
 
