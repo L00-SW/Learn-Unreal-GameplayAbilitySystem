@@ -20,7 +20,7 @@
 ASlashCharacter::ASlashCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -53,6 +53,16 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows->AttachmentName = FString("head");
 }
 
+void ASlashCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->RegenStamina(DeltaTime);
+		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+	}
+}
+
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -79,8 +89,6 @@ float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
-
-	DisableMeshCollisioin();
 	if (Attributes && Attributes->GetHealthPercent() > 0.f)
 	{
 		ActionState = EActionState::EAS_HitReaction;
@@ -182,10 +190,25 @@ void ASlashCharacter::LightAttack()
 
 void ASlashCharacter::Dodge()
 {
-	if (IsUnoccupied())
+	if (IsNotUnoccupied() || !HasEnoughStamina()) return;
+	PlayDodgeMontage();
+	ResetCombo();
+	ActionState = EActionState::EAS_Dodge;
+	if (Attributes && SlashOverlay)
 	{
-		PlayDodgeMontage();
+		Attributes->UseStamina(Attributes->GetDodgeCost());
+		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
 	}
+}
+
+bool ASlashCharacter::IsNotUnoccupied()
+{
+	return ActionState != EActionState::EAS_Unoccupied;
+}
+
+bool ASlashCharacter::HasEnoughStamina()
+{
+	return Attributes && Attributes->GetStamina() > Attributes->GetDodgeCost();
 }
 
 void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
@@ -197,6 +220,11 @@ void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
 }
 
 void ASlashCharacter::ResetAttack()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
+void ASlashCharacter::DodgeEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
@@ -252,7 +280,7 @@ void ASlashCharacter::PlayDeathMontage()
 	ActionState = EActionState::EAS_Dead;
 	//Before DeathMotage end, get hit RandomDeathMontage start again
 	//Collision set NoCollision
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DisableMeshCollisioin();
 
 	PlayRandomDeathMontage();
 }

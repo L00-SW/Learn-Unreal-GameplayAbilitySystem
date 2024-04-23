@@ -57,6 +57,9 @@ protected:
 	virtual void ResetAttack();
 
 	UFUNCTION(BlueprintCallable)
+	virtual void DodgeEnd();
+
+	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 
 

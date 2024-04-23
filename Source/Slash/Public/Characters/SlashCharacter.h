@@ -28,6 +28,7 @@ class SLASH_API ASlashCharacter : public ABaseCharacter, public IPickupInterface
 public:
 	// Sets default values for this character's properties
 	ASlashCharacter();
+	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
@@ -48,6 +49,7 @@ protected:
 	//Combat
 	void EquipWeapon(AWeapon* Weapon);
 	virtual void ResetAttack() override;
+	virtual void DodgeEnd() override;
 	virtual bool CanAttack() override;
 	bool CanDisarm();
 	bool CanArm();
@@ -55,6 +57,7 @@ protected:
 	void Arm();
 	void PlayEquipMontage(const FName& SectionName);
 	virtual void PlayDeathMontage() override;
+	bool HasEnoughStamina();
 
 	UFUNCTION(BlueprintCallable)
 	void ResetCombo();
@@ -94,6 +97,7 @@ protected:
 
 private:
 	bool IsUnoccupied();
+	bool IsNotUnoccupied();
 	void InitializeSlashOverlay();
 	void SetHUDHealth();
 
